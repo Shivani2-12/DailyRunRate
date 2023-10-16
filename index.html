@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRR Calculator</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+  </head>
+  <body>
+    <h1>DRR Calculator</h1>
+
+    <table id="drr-calculator">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Id</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Month, Year</th>
+          <th>Dates Excluded</th>
+          <th>Number of Days</th>
+          <th>Lead Count</th>
+          <th>Expected DRR</th>
+          <th>Last Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>
+            <input type="text" id="id_value" />
+          </td>
+          <td>
+            <input type="text" id="start_date" />
+          </td>
+          <td>
+            <input type="text" id="end_date" />
+          </td>
+          <td id="month-year"></td>
+
+          <td><input type="text" id="datePick" class="datepick-input" /></td>
+
+          <td id="number-of-days"></td>
+          <td>
+            <input type="text" id="lead_count" />
+          </td>
+          <td id="expected-drr"></td>
+          <td id="last-update">
+            <input type="button" id="Save-button" value="Save" />
+            <input type="button" id="Cancel-button" value="Cancel" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script src="index.js"></script>
+  </body>
+</html>
