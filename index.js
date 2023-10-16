@@ -151,6 +151,7 @@ $(document).ready(function () {
   // Save button click event
   $("#drr-calculator tbody").on("click", "#Save-button", function () {
     // Get the values from the input fields
+    
     let id = $(this).closest("tr").find("#id_value").val();
     var startDate = $(this).closest("tr").find("#start_date").val();
     var endDate = $(this).closest("tr").find("#end_date").val();
@@ -188,16 +189,21 @@ $(document).ready(function () {
 
     // Insert the new row after the first row (header row)
     $("#drr-calculator tbody tr:first").after(newRow);
+    excludedDates=[];
     // Clear the input fields
+    console.log(excludedDates, numberOfDays);
+
     $(this).closest("tr").find("input[type='text']").val("");
   $(this).closest("tr").find(".datepick-input").multiDatesPicker("resetDates");
   $("#number-of-days").text(""); // Clear the number-of-days cell
   $("#expected-drr").text(""); // Clear the expected-drr cell
   $("#month-year").text(""); // Clear the month-year cell
   });
+  
   $("#drr-calculator tbody").on("click", "#Cancel-button", function () {
   
     $(this).closest("tr").find("input[type='text']").val("");
+   
     $(this).closest("tr").find(".datepick-input").multiDatesPicker("resetDates");
     $("#number-of-days").text(""); // Clear the number-of-days cell
     $("#expected-drr").text(""); // Clear the expected-drr cell
@@ -208,4 +214,6 @@ $(document).ready(function () {
     var row = $(this).closest("tr");
     row.remove(); // Remove the row when "Delete" is clicked
   });
+
+  
 });
