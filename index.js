@@ -189,9 +189,10 @@ $(document).ready(function () {
 
     // Insert the new row after the first row (header row)
     $("#drr-calculator tbody tr:first").after(newRow);
+    //empty the array excludedDates after adding to the row
     excludedDates=[];
     // Clear the input fields
-    console.log(excludedDates, numberOfDays);
+   // console.log(excludedDates, numberOfDays);
 
     $(this).closest("tr").find("input[type='text']").val("");
   $(this).closest("tr").find(".datepick-input").multiDatesPicker("resetDates");
