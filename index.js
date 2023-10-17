@@ -191,7 +191,7 @@ $(document).ready(function () {
   //   // Insert the new row after the first row (header row)
   //   $("#drr-calculator tbody tr:first").after(newRow);
     
-    //empty the array excludedDates after adding to the row
+
    
     // Clear the input fields
     //console.log(excludedDates, numberOfDays);
