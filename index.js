@@ -22,12 +22,9 @@ $(document).ready(function () {
       // Check if the date is within the range
       return [date >= startDate, ""];
     },
-    //Onselecting end date, update Month year.
-
+    // On selecting the end date, update the "Month, Year" field and display the number of days
     onSelect: function (selectedDate) {
-      // Update the "Month, Year" field
       updateMonthYear();
-      //Display number of days, before selecting excluded dates
       $("#number-of-days").text(calculateNumberOfDays());
     },
   });
@@ -38,9 +35,9 @@ $(document).ready(function () {
   // Initialize the datepicker for the "datePick" input to allow selecting multiple dates
   $(".datepick-input").multiDatesPicker({
     dateFormat: "yy-mm-dd",
-   
+
     onSelect: function (dateText) {
-      // Add selected date to the excludedDates array
+      // Add the selected date to the excludedDates array
       var date = new Date(dateText);
       var dateToPush = date.getDate();
 
@@ -68,6 +65,7 @@ $(document).ready(function () {
     },
   });
 
+  // Function to update the "Month, Year" field
   function updateMonthYear() {
     // Get the selected start and end dates
     var startDate = $("#start_date").datepicker("getDate");
@@ -93,36 +91,35 @@ $(document).ready(function () {
       return "";
     }
   }
-  // Function to calculate the number of days after excluding specified dates
 
+  // Function to calculate the number of days after excluding specified dates
   function calculateNumberOfDays() {
     var startingDate = $("#start_date").datepicker("getDate");
     var endingDate = $("#end_date").datepicker("getDate");
-  
+
     if (!startingDate || !endingDate) {
       return 0;
     }
-  
+
     var numberOfDays = 0;
     var currentDate = new Date(startingDate);
-  
+
     while (currentDate <= endingDate) {
       // Move to the next day
       currentDate.setDate(currentDate.getDate() + 1);
       numberOfDays++;
-  
+
       // Check if we have moved to the next month or past the ending date
       if (currentDate > endingDate) {
         break; // Exit the loop if we reached the ending date
       }
     }
-  
+
     // Subtract the excluded dates
     numberOfDays -= excludedDates.length;
-  
+
     return numberOfDays;
   }
-  
 
   // Attach an input event listener to the lead count input field
   $("#lead_count").on("input", function () {
@@ -147,123 +144,71 @@ $(document).ready(function () {
     }
   }
 
+  // Save button click event
+  $("#drr-calculator tbody").on("click", "#Save-button", function () {
+    // Collect data from the input fields
+    let id = $(this).closest("tr").find("#id_value").val();
+    var startDate = $(this).closest("tr").find("#start_date").val();
+    var endDate = $(this).closest("tr").find("#end_date").val();
+    var leadCount = $(this).closest("tr").find("#lead_count").val();
+    var monthYearText = updateMonthYear();
+    var numberOfDays = calculateNumberOfDays();
+    var expectedDRR = calculateExpectedDRR(leadCount, numberOfDays);
 
+    if (excludedDates.length === 0) {
+      var datePick = "None";
+    } else {
+      var datePick = $(this).closest("tr").find("#datePick").val();
+    }
 
-  // // Save button click event
-  // $("#drr-calculator tbody").on("click", "#Save-button", function () {
-  //   // Get the values from the input fields
+    var lastUpdate = new Date().toLocaleString();
 
-  //   let id = $(this).closest("tr").find("#id_value").val();
-  //   var startDate = $(this).closest("tr").find("#start_date").val();
-  //   var endDate = $(this).closest("tr").find("#end_date").val();
+    // Create a data object to send to the server
+    var data = {
+      id: id,
+      startDate: startDate,
+      endDate: endDate,
+      leadCount: leadCount,
+      monthYearText: monthYearText,
+      numberOfDays: numberOfDays,
+      datePick: datePick,
+      expectedDRR: expectedDRR,
+      lastUpdate: lastUpdate,
+    };
 
-  //   var leadCount = $(this).closest("tr").find("#lead_count").val();
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:5500/save-data", // Replace with your server endpoint
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      success: function (response) {
+        // Handle the server response (if needed)
+        console.log("Data saved:", response);
 
-  //   var monthYearText = updateMonthYear();
-  //   // Calculate the number of days after excluding the specified dates
-  //   var numberOfDays = calculateNumberOfDays();
-  //   // Calculate the expected DRR
-  //   var expectedDRR = calculateExpectedDRR(leadCount, numberOfDays);
-  //   if (excludedDates.length === 0) {
-  //     var datePick = "None";
-  //   } else {
-  //     var datePick = $(this).closest("tr").find("#datePick").val();
-  //   }
+        // Create a new row in your table with the data
+        var newRow = $("<tr></tr>");
+        newRow.append(
+          '<td><button class="edit-button">Edit</button> <button class="delete-button">Delete</button></td>'
+        );
+        newRow.append("<td>" + id + "</td>");
+        newRow.append("<td>" + startDate + "</td>");
+        newRow.append("<td>" + endDate + "</td>");
+        newRow.append("<td>" + monthYearText + "</td>");
+        newRow.append("<td>" + datePick + "</td>");
+        newRow.append("<td>" + numberOfDays + "</td>");
+        newRow.append("<td>" + leadCount + "</td>");
+        newRow.append("<td>" + expectedDRR + "</td>");
+        newRow.append("<td>" + lastUpdate + "</td>");
 
-  //   var lastUpdate = new Date().toLocaleString();
- 
-  //   // Create a new row
-  //   var newRow = $("<tr></tr>");
-  //   newRow.append(
-  //     '<td><button class="edit-button">Edit</button> <button class="delete-button">Delete</button></td>'
-  //   );
-  //   newRow.append("<td>" + id + "</td>");
-  //   newRow.append("<td>" + startDate + "</td>");
-  //   newRow.append("<td>" + endDate + "</td>");
-  //   newRow.append("<td>" + monthYearText + "</td>");
-
-  //   newRow.append("<td>" + datePick + "</td>");
-  //   newRow.append("<td>" + numberOfDays + "</td>");
-  //   newRow.append("<td>" + leadCount + "</td>");
-  //   newRow.append("<td>" + expectedDRR + "</td>");
-  //   newRow.append("<td>" + lastUpdate + "</td>");
-
-  //   // Insert the new row after the first row (header row)
-  //   $("#drr-calculator tbody tr:first").after(newRow);
-    
-
-   
-    // Clear the input fields
-    //console.log(excludedDates, numberOfDays);
-
-
- // Save button click event
- $("#drr-calculator tbody").on("click", "#Save-button", function () {
-  // Collect data from the input fields
-  let id = $(this).closest("tr").find("#id_value").val();
-  var startDate = $(this).closest("tr").find("#start_date").val();
-  var endDate = $(this).closest("tr").find("#end_date").val();
-  var leadCount = $(this).closest("tr").find("#lead_count").val();
-  var monthYearText = updateMonthYear();
-  var numberOfDays = calculateNumberOfDays();
-  var expectedDRR = calculateExpectedDRR(leadCount, numberOfDays);
-    
-  if (excludedDates.length === 0) {
-    var datePick = "None";
-  } else {
-    var datePick = $(this).closest("tr").find("#datePick").val();
-  }
-
-  var lastUpdate = new Date().toLocaleString();
-
-  // Create a data object to send to the server
-  var data = {
-    id: id,
-    startDate: startDate,
-    endDate: endDate,
-    leadCount: leadCount,
-    monthYearText: monthYearText,
-    numberOfDays: numberOfDays,
-    datePick: datePick,
-    expectedDRR: expectedDRR,
-    lastUpdate: lastUpdate,
-  };
-
-  $.ajax({
-    type: "POST",
-    url: "http://localhost:5500/save-data", // Replace with your server endpoint
-    data: JSON.stringify(data),
-    contentType: "application/json",
-    success: function (response) {
-      // Handle the server response (if needed)
-      console.log("Data saved:", response);
-
-      // Create a new row in your table with the data
-      var newRow = $("<tr></tr>");
-      newRow.append(
-        '<td><button class="edit-button">Edit</button> <button class="delete-button">Delete</button></td>'
-      );
-      newRow.append("<td>" + id + "</td>");
-      newRow.append("<td>" + startDate + "</td>");
-      newRow.append("<td>" + endDate + "</td>");
-      newRow.append("<td>" + monthYearText + "</td>");
-      newRow.append("<td>" + datePick + "</td>");
-      newRow.append("<td>" + numberOfDays + "</td>");
-      newRow.append("<td>" + leadCount + "</td>");
-      newRow.append("<td>" + expectedDRR + "</td>");
-      newRow.append("<td>" + lastUpdate + "</td>");
-
-      // Insert the new row after the first row (header row)
-      $("#drr-calculator tbody tr:first").after(newRow);
-
-      
-    },
-    error: function (error) {
-      // Handle errors
-      console.error("Error saving data:", error);
-    },
-  });
-  excludedDates = [];
+        // Insert the new row after the first row (header row)
+        $("#drr-calculator tbody tr:first").after(newRow);
+      },
+      error: function (error) {
+        // Handle errors
+        console.error("Error saving data:", error);
+      },
+    });
+    excludedDates = [];
     $(this).closest("tr").find("input[type='text']").val("");
     $(this)
       .closest("tr")
@@ -272,16 +217,11 @@ $(document).ready(function () {
     $("#number-of-days").text(""); // Clear the number-of-days cell
     $("#expected-drr").text(""); // Clear the expected-drr cell
     $("#month-year").text(""); // Clear the month-year cell
-
- 
- 
   });
 
-
-
+  // Cancel button click event
   $("#drr-calculator tbody").on("click", "#Cancel-button", function () {
     $(this).closest("tr").find("input[type='text']").val("");
-
     $(this)
       .closest("tr")
       .find(".datepick-input")
@@ -290,8 +230,6 @@ $(document).ready(function () {
     $("#expected-drr").text(""); // Clear the expected-drr cell
     $("#month-year").text(""); // Clear the month-year cell
   });
-
-
 
   // Handle "Delete" button click
   $("#drr-calculator tbody").on("click", ".delete-button", function () {
